@@ -10,7 +10,7 @@
 (3)JWT使用HS256进行签名,确保token不被篡改。  
 (4)token有效时长设置为30分钟(借助redis完成)，过期后必须重新登录。  
 (5)注册账号对密码长度特殊字符要求
-(6)退出登录
+(6)退出登录  
 未实现功能：  
 (1)如果不希望用户频繁登录，可以通过access_token(有效期短)与refresh_token(有效期长)结合的方式，  
 在access_token失效后通过refresh_token获取新的access_token,避免频繁登录。  
