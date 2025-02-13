@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 
 import jwt
-from fastapi import HTTPException
+from fastapi import HTTPException, Header
 
 from db.dao import redis_dao
 
@@ -24,19 +24,20 @@ def create_access_token(username: str, access_token_expires_minutes: int = 30):
     return token
 
 
-async def verify_token(token: str):
+async def verify_token(authorization: str = Header(None)):
     """
     验证token，并从Redis中获取用户名
-    :param token:
+    :param authorization:
     :return:
     """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(f"verify_token======{authorization}")
+        payload = jwt.decode(authorization, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload["sub"]
 
         # 检查redis是否存储了该token
         redis_client = await redis_dao.get_redis()
-        if await redis_client.get(f"token:{token}") is None:
+        if await redis_client.get(f"token:{authorization}") is None:
             raise HTTPException(status_code=401, detail="Token expired or revoked")
 
         return username

@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, Depends
 
 from service import login_service, token_service, register_service
 from router.request_model import UserCreate
@@ -40,23 +40,21 @@ async def login(user: UserCreate):
 
 
 @router.get("/protected")
-async def protected_route(authorization: str = Header(None)):
+async def protected_route(username: str = Depends(token_service.verify_token)):
     """
     访问受保护接口
-    :param authorization: 从消息头获取的token
+    :param username: 验证token获取的用户名称
     :return:
     """
-    print("authorization========", authorization)
-    username = await token_service.verify_token(authorization)
+    print("username========", username)
     return {"message": f"Welcome, {username}"}
 
 
 @router.post("/logout")
-async def logout(token: str):
+async def logout(username: str = Depends(token_service.verify_token), authorization: str = Header(None)):
     """
     注销登录
-    :param token:
     :return:
     """
-    await token_service.revoke_token(token)
-    return {"message": "Logged out successfully"}
+    await token_service.revoke_token(authorization)
+    return {"message": f"{username} logged out successfully"}
