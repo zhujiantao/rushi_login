@@ -3,14 +3,12 @@
 from datetime import datetime, timedelta
 
 import jwt
-from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException
 
 from db.dao import redis_dao
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def create_access_token(username: str, access_token_expires_minutes: int = 30):
